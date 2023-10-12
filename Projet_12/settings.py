@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authentication',
     'epic_events',
+    'django_extensions',
 
 ]
 
