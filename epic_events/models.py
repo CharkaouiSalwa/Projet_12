@@ -15,21 +15,10 @@ class Client(models.Model):
     def __str__(self):
         return self.nom_complet
 
-class Contrat(models.Model):
-    identifiant_unique = models.CharField(max_length=20, unique=True)
-    client = models.ForeignKey('Client', on_delete=models.CASCADE)
-    contact_commercial = models.CharField(max_length=255)
-    montant_total = models.DecimalField(max_digits=10, decimal_places=2)
-    montant_restant = models.DecimalField(max_digits=10, decimal_places=2)
-    date_creation_contrat = models.DateField()
-    contrat_signe = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.identifiant_unique
 
 class Evenement(models.Model):
     event_id = models.CharField(max_length=20, unique=True)
-    contrat = models.ForeignKey('Contrat', on_delete=models.CASCADE)
+    contrat = models.ManyToManyField('Contrat')
     nom_client = models.CharField(max_length=255)
     contact_client = models.CharField(max_length=255)
     date_debut = models.DateTimeField()
@@ -41,6 +30,20 @@ class Evenement(models.Model):
 
     def __str__(self):
         return self.event_id
+
+class Contrat(models.Model):
+    identifiant_unique = models.CharField(max_length=20, unique=True)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    evenements = models.ManyToManyField(Evenement, related_name='Contrat')
+    contact_commercial = models.CharField(max_length=255)
+    montant_total = models.DecimalField(max_digits=10, decimal_places=2)
+    montant_restant = models.DecimalField(max_digits=10, decimal_places=2)
+    date_creation_contrat = models.DateField()
+    contrat_signe = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.identifiant_unique
+
 
 
 class Collaborateur(AbstractUser):
@@ -56,7 +59,6 @@ class Collaborateur(AbstractUser):
     # Identifiants de connexion
     username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=128)
-
     # Spécifiez le champ à utiliser comme nom d'utilisateur
     USERNAME_FIELD = 'username'
     # Spécifiez les champs requis lors de la création d'un utilisateur
