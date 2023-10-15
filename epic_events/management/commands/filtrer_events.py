@@ -5,7 +5,7 @@ class Command(BaseCommand):
     help = 'Affiche les événements attribués à un contrat et tous les événements si aucun ID de contrat n\'est fourni.'
 
     def add_arguments(self, parser):
-        parser.add_argument('contrat_id', type=int, nargs='?', help='ID du contrat (facultatif)')
+        parser.add_argument('contrat_id', type=int, nargs='?', help='ID du contrat ')
 
     def handle(self, *args, **kwargs):
         contrat_id = kwargs['contrat_id']
