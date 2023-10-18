@@ -29,8 +29,14 @@ INSTALLED_APPS = [
     'authentication',
     'epic_events',
     'django_extensions',
-
 ]
+
+import secrets
+
+
+# Définir la clé secrète
+secret_key = secrets.token_urlsafe(32)
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
