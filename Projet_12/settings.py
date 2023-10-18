@@ -1,5 +1,8 @@
 
 from pathlib import Path
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,11 +35,17 @@ INSTALLED_APPS = [
 ]
 
 import secrets
-
-
 # Définir la clé secrète
 secret_key = secrets.token_urlsafe(32)
 
+
+
+sentry_sdk.init(
+    dsn="https://0400fe93da6b7fcf0259cd54b2c482ee@o4506071063789568.ingest.sentry.io/4506071066083328",
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+    integrations=[DjangoIntegration()],
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -46,6 +55,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'sentry_sdk.integrations.django.middleware.SentryMiddleware',
+
 ]
 
 ROOT_URLCONF = 'Projet_12.urls'
