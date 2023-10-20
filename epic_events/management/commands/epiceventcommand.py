@@ -2,7 +2,6 @@ from django.core.management.base import BaseCommand
 from jwt import DecodeError, ExpiredSignatureError
 from django.conf import settings
 import jwt
-
 from authentication.management.commands.sign_up import User
 
 class EpicEventCommand(BaseCommand):
@@ -24,7 +23,10 @@ class EpicEventCommand(BaseCommand):
             return None
 
     def handle(self, *args, **options):
-        token = options.get('token')
+        # Lisez le token depuis le fichier 'token.txt'
+        with open('token.txt', 'r') as file:
+            token = file.read().strip()
+
         user_id = self.verify_token(token)
 
         if user_id:

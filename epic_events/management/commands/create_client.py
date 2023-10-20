@@ -7,12 +7,12 @@ from .epiceventcommand import EpicEventCommand
 class Command(EpicEventCommand):
     help = 'Crée un client associé à l\'utilisateur authentifié ayant le rôle "commercial"'
 
-    def add_arguments(self, parser):
-        super().add_arguments(parser)
-        parser.add_argument('--token', type=str, help='Token JWT', required=True)
-
     def execute_authenticated_command(self, *args, **options):
-        user = self.get_authenticated_user(options['token'])
+        # Lisez le token depuis le fichier 'token.txt'
+        with open('token.txt', 'r') as file:
+            token = file.read().strip()
+
+        user = self.get_authenticated_user(token)
 
         if user and user.role == 'commercial':
             self.stdout.write(self.style.SUCCESS(f'- Bienvenue, {user.username}'))
