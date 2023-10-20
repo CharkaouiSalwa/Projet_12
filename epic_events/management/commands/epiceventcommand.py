@@ -3,7 +3,16 @@ from jwt import DecodeError, ExpiredSignatureError
 from django.conf import settings
 import jwt
 
+from authentication.management.commands.sign_up import User
+
 class EpicEventCommand(BaseCommand):
+
+    def get_authenticated_user(self, token):
+        user_id = self.verify_token(token)
+        if user_id:
+            return User.objects.filter(id=user_id).first()
+        return None
+
     help = 'Commande de gestion personnalisée pour Epic Events'
 
     def verify_token(self, token):

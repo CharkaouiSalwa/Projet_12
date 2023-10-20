@@ -50,6 +50,7 @@ class Collaborateur(AbstractUser):
     ROLE_CHOICES = (
         ('commercial', 'Commercial'),
         ('support', 'Support'),
+        ('gestion', 'Gestion'),
     )
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
