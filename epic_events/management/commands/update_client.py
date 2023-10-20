@@ -1,39 +1,40 @@
+from django.core.management.base import BaseCommand
 from epic_events.models import Client
+from django.utils import timezone
 from .epiceventcommand import EpicEventCommand
 
-
 class Command(EpicEventCommand):
-    help = 'Mettre à jour les informations d\'un client'
+    help = 'Mettez à jour les informations d\'un client associé à l\'utilisateur authentifié ayant le rôle "commercial"'
 
-    def add_arguments(self, parser):
-        parser.add_argument('client_id', type=int, help='ID du client à mettre à jour')
-        parser.add_argument('--nom_complet', type=str, help='Nouveau nom complet du client', required=False)
-        parser.add_argument('--email', type=str, help='Nouvelle adresse e-mail du client', required=False)
-        parser.add_argument('--telephone', type=str, help='Nouveau numéro de téléphone du client', required=False)
-        parser.add_argument('--nom_entreprise', type=str, help='Nouveau nom de l\'entreprise du client', required=False)
-        parser.add_argument('token', type=str, help='Token JWT à utiliser pour l\'authentification')
+    def execute_authenticated_command(self, *args, **options):
+        # Lisez le token depuis le fichier 'token.txt'
+        with open('token.txt', 'r') as file:
+            token = file.read().strip()
 
-    def handle(self, *args, **kwargs):
-        client_id = kwargs['client_id']
-        token = kwargs['token']
+        user = self.get_authenticated_user(token)
 
-        # érifier le token en utilisant la méthode verify_token de la classe mère (EpicEventCommand).
-        user_id = self.verify_token(token)
+        if user and user.role == 'commercial':
+            self.stdout.write(self.style.SUCCESS(f'- Bienvenue, {user.username}'))
 
-        if user_id:
-            try:
-                client = Client.objects.get(pk=client_id)
-            except Client.DoesNotExist:
-                self.stdout.write(self.style.ERROR('Client non trouvé.'))
+            # Demandez à l'utilisateur de saisir l'ID du client à mettre à jour
+            client_id = input('ID du client à mettre à jour : ')
+
+            # Vérifiez si le client existe
+            client = Client.objects.filter(id=client_id).first()
+            if not client:
+                self.stdout.write(self.style.ERROR("Le client spécifié n'a pas été trouvé."))
                 return
 
-            # Mettez à jour les champs du client si des valeurs ont été spécifiées
-            for field_name in ['nom_complet', 'email', 'telephone', 'nom_entreprise']:
-                new_value = kwargs.get(field_name)
-                if new_value:
-                    setattr(client, field_name, new_value)
+            # Demandez à l'utilisateur de fournir les informations mises à jour pour le client
+            client.nom_complet = input('Nouveau nom complet du client (laissez vide pour ne pas mettre à jour) : ') or client.nom_complet
+            client.email = input('Nouvelle adresse e-mail du client (laissez vide pour ne pas mettre à jour) : ') or client.email
+            client.telephone = input('Nouveau numéro de téléphone du client (laissez vide pour ne pas mettre à jour) : ') or client.telephone
+            client.nom_entreprise = input('Nouveau nom de l\'entreprise du client (laissez vide pour ne pas mettre à jour) : ') or client.nom_entreprise
 
+            # Mettez à jour les informations du client
+            client.derniere_mise_a_jour = timezone.now()
             client.save()
-            self.stdout.write(self.style.SUCCESS(f'Client {client_id} mis à jour avec succès.'))
+
+            self.stdout.write(self.style.SUCCESS(f'Les informations du client ont été mises à jour avec succès.'))
         else:
-            self.stdout.write(self.style.ERROR('Authentification échouée. Token invalide ou expiré.'))
+            self.stdout.write(self.style.ERROR("Utilisateur non trouvé, non authentifié ou n'a pas le rôle 'commercial'. Veuillez vous connecter et réessayer."))
