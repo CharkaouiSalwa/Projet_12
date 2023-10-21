@@ -1,11 +1,30 @@
-from django.core.management.base import BaseCommand
 from epic_events.models import Client, Contrat
 from django.utils import timezone
+from .epiceventcommand import EpicEventCommand
 
-class Command(BaseCommand):
-    help = 'Créer un contrat '
+class Command(EpicEventCommand):
+    help = 'Créer un contrat'
+
+    def execute_authenticated_command(self, *args, **options):
+        # Lisez le token depuis le fichier 'token.txt'
+        with open('token.txt', 'r') as file:
+            token = file.read().strip()
+
+        user = self.get_authenticated_user(token)
+
+        if user and user.role == 'gestion':
+            self.stdout.write(self.style.SUCCESS(f'- Bienvenue, {user.username}'))
+            return True
+        else:
+            self.stdout.write(self.style.ERROR("L'utilisateur n'est pas autorisé à créer un contrat."))
+            return False
 
     def handle(self, *args, **options):
+        # Vérifiez l'authentification de l'utilisateur
+        authenticated = self.execute_authenticated_command(*args, **options)
+        if not authenticated:
+            return
+
         # Demandez à l'utilisateur de fournir les informations nécessaires pour créer un contrat
         client_id = input('ID du client associé au contrat: ')
         identifiant_unique = input('Identifiant unique du contrat: ')
