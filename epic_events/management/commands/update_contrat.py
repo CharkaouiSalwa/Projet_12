@@ -1,8 +1,9 @@
 from epic_events.models import Client, Contrat
 from .epiceventcommand import EpicEventCommand
 
+
 class Command(EpicEventCommand):
-    help = 'Mettre à jour un contrat  en utilisant l\'ID du client.'
+    help = 'Mettre à jour un contrat en utilisant l\'ID du client et de contrat'
 
     def add_arguments(self, parser):
         parser.add_argument('client_id', type=int, help='ID du client')
@@ -11,22 +12,24 @@ class Command(EpicEventCommand):
         parser.add_argument('--montant_restant', type=float, help='Nouveau montant restant du contrat')
         parser.add_argument('--date_creation_contrat', type=str, help='Nouvelle date de création du contrat')
         parser.add_argument('--contrat_signe', type=bool, help='Nouvel état du contrat signé (True/False)')
-        parser.add_argument('token', type=str, help='Token JWT à utiliser pour l\'authentification')
 
+    def execute_authenticated_command(self, *args, **options):
+        # Lisez le token depuis le fichier 'token.txt'
+        with open('token.txt', 'r') as file:
+            token = file.read().strip()
 
-    def handle(self, *args, **kwargs):
-        client_id = kwargs['client_id']
-        contrat_id = kwargs['contrat_id']
-        montant_total = kwargs.get('montant_total')
-        montant_restant = kwargs.get('montant_restant')
-        date_creation_contrat = kwargs.get('date_creation_contrat')
-        contrat_signe = kwargs.get('contrat_signe')
-        token = kwargs['token']
+        user = self.get_authenticated_user(token)
 
-        # Vérifier le token avec la classe de base
-        user_id = self.verify_token(token)
+        if user and user.role == 'commercial':
+            self.stdout.write(self.style.SUCCESS(f'- Bienvenue, {user.username}'))
 
-        if user_id:
+            client_id = options['client_id']
+            contrat_id = options['contrat_id']
+            montant_total = options['montant_total']
+            montant_restant = options['montant_restant']
+            date_creation_contrat = options['date_creation_contrat']
+            contrat_signe = options['contrat_signe']
+
             try:
                 # Recherchez le client en fonction de l'ID
                 client = Client.objects.get(id=client_id)
@@ -53,4 +56,4 @@ class Command(EpicEventCommand):
             except Contrat.DoesNotExist:
                 self.stdout.write(self.style.ERROR(f'Contrat avec ID {contrat_id} non trouvé pour le client {client.nom_complet}.'))
         else:
-            self.stdout.write(self.style.ERROR('Authentification échouée. Token invalide ou expiré.'))
+            self.stdout.write(self.style.ERROR("Utilisateur non trouvé, non authentifié ou n'a pas le rôle 'commercial'. Veuillez vous connecter et réessayer."))

@@ -9,7 +9,8 @@ class EpicEventCommand(BaseCommand):
     def get_authenticated_user(self, token):
         user_id = self.verify_token(token)
         if user_id:
-            return User.objects.filter(id=user_id).first()
+            user = User.objects.filter(id=user_id).first()
+            return user
         return None
 
     help = 'Commande de gestion personnalisée pour Epic Events'
@@ -30,7 +31,11 @@ class EpicEventCommand(BaseCommand):
         user_id = self.verify_token(token)
 
         if user_id:
-            self.stdout.write(self.style.SUCCESS(f'Utilisateur authentifié avec ID {user_id}'))
+            user = self.get_authenticated_user(token)
+            if user:
+                self.stdout.write(self.style.SUCCESS(f"Utilisateur authentifié avec ID {user_id}, nom {user.username} de l'équipe {user.role}"))
+            else:
+                self.stdout.write(self.style.ERROR('Utilisateur non trouvé.'))
             self.execute_authenticated_command(*args, **options)
         else:
             self.stdout.write(self.style.ERROR('Authentification échouée. Token invalide ou expiré.'))

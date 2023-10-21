@@ -1,4 +1,3 @@
-from django.core.management.base import BaseCommand
 from epic_events.models import Client
 from datetime import date
 from django.utils import timezone
