@@ -35,3 +35,4 @@ class Command(EpicEventCommand):
                 self.stdout.write(self.style.SUCCESS('Aucun événement avec contact_support trouvé.'))
         else:
             self.stdout.write(self.style.ERROR("Utilisateur non trouvé, non authentifié ou n'a pas le rôle 'support'. Veuillez vous connecter et réessayer."))
+

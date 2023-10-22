@@ -45,3 +45,4 @@ class Command(EpicEventCommand):
         else:
             self.stdout.write(self.style.ERROR(
                 "Utilisateur non trouvé, non authentifié ou n'a pas le rôle 'gestion' ou 'support'. Veuillez vous connecter et réessayer."))
+

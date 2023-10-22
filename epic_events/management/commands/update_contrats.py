@@ -52,3 +52,4 @@ class Command(EpicEventCommand):
                 self.stdout.write(self.style.ERROR("Rôle utilisateur non valide."))
         else:
             self.stdout.write(self.style.ERROR('Utilisateur non trouvé ou non authentifié. Veuillez vous connecter et réessayer.'))
+
