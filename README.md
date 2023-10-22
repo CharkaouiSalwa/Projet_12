@@ -29,7 +29,7 @@ python -m venv env
 ```
  - Activer l'environnement virtuel : 
 ```
-source  env/bin/activate
+source  venv/bin/activate
 ```
  - Installer les bibliothéques nécessaires depuis le fichier requirements.txt :
 ``` shell
@@ -57,18 +57,18 @@ cd project
 ```
 - Executer la commande pour creer un utilisateur.
 ```
-python manage.py create_user
+python manage.py sign_up
 ```
-- Ou bien generer le token directement et se connecter avec le user et mot de passe.
+- Ou bien generer le token directement et se connecter avec le user et mot de passe et enregistrer le token dans un fichie token.txt.
 ```
-python manage.py generer_token <user> <password>
+python manage.py login <user> <password> --file token.txt
 ```
 - Apres vous pouvez commencer à exécuter les autres commande de la méme maniére.
-- Les opérations Create, Filtr autoriser sans token et se connecter avec la commande.
+- Executer la commande pour se déconecté et supprimer lo token du fichier.
 ```
-python manage.py login
+python manage.py logout
 ```
-- Les opérations Delete et Update obligatoire de generer le token.
+
 
 <br/><br/><br/>
 *Par Salwa CHARKAOUI* 
