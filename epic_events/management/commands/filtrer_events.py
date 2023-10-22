@@ -29,6 +29,7 @@ class Command(BaseCommand):
             self.stdout.write(f'Date de fin: {evenement.date_fin}')
             self.stdout.write(f'Lieu: {evenement.lieu}')
             self.stdout.write(f'Nombre de participants: {evenement.participants}')
+            self.stdout.write(f'Contact Support: {evenement.contact_support}')
             self.stdout.write(f'Notes: {evenement.notes}')
             self.stdout.write("\n")
 
