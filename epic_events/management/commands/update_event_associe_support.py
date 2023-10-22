@@ -27,7 +27,6 @@ class Command(EpicEventCommand):
                 evenement = Evenement.objects.get(event_id=evenement_id)
 
                 # Vérifiez si l'événement n'a pas de contact_support
-
                 if evenement.contact_support is None or evenement.contact_support.strip() == '':
                     if contact_support:
                         # Ajoutez le support à l'événement
